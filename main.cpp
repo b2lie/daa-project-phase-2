@@ -4,6 +4,7 @@
 #include "int_mult.h"
 #include <fstream>
 #include <iostream>
+#include <thread>
 
 struct Button
 {
@@ -20,14 +21,27 @@ bool IsButtonClicked(Button btn)
 
 int main()
 {
-    InitWindow(800, 600, "Divide & Conquer Visualizer");
+    InitWindow(1120, 600, "Divide & Conquer Visualizer");
+
+    Image icon = LoadImage("extras/icon.png");
+    ImageFormat(&icon, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8); // <- force RGBA
+
+    if (icon.data == NULL) {
+        printf("Error: Could not load icon.png\n");
+        CloseWindow();
+        return 1;
+    }
+    SetWindowIcon(icon);   
+    // we can unload the image after setting the icon!
+    UnloadImage(icon);
+    
     SetTargetFPS(60);
     initStars(150);
 
     Button buttons[3] = {
-        {{280, 220, 250, 50}, "Closest Pair", LIGHTGRAY},
-        {{280, 290, 250, 50}, "Integer Multiplication", LIGHTGRAY},
-        {{280, 360, 250, 50}, "Exit", LIGHTGRAY}};
+        {{425, 220, 250, 50}, "Closest Pair", LIGHTGRAY},
+        {{425, 290, 250, 50}, "Integer Multiplication", LIGHTGRAY},
+        {{425, 360, 250, 50}, "Exit", LIGHTGRAY}};
 
     while (!WindowShouldClose())
     {
@@ -35,8 +49,10 @@ int main()
         ClearBackground(BLACK);
         updateAndDrawStars(); // stars move in bg!
 
-        DrawText("Divide & Conquer Visualizer", 190, 120, 30, PURPLE);
-        DrawText("DAA Project, Sem 5 - Fall 2025", 230, 160, 20, LIGHTGRAY);
+        bool choiceMade = false;
+
+        DrawText("Divide & Conquer Visualizer", 350, 100, 30, PURPLE);
+        DrawText("DAA Project, Sem 5 - Fall 2025", 395, 150, 20, LIGHTGRAY);
 
         // draw and handle buttons
         for (int i = 0; i < 3; i++)
@@ -61,46 +77,192 @@ int main()
         // handle button clicks
         if (IsButtonClicked(buttons[0]))
         {
-            // flash blank screen for 10 frames
-            for (int i = 0; i < 10; i++)
-            {
-                BeginDrawing();
-                ClearBackground(BLACK); // blank screen
-                updateAndDrawStars();   // optional: keep stars moving
-                EndDrawing();
-            }
+            bool choiceMade = false;
+            int selectedIndex = 0;
+            const int numOptions = 10;
+            const char *options[numOptions] = {
+                "closest100.txt",
+                "closest200.txt",
+                "closest300.txt",
+                "closest400.txt",
+                "closest500.txt",
+                "closest600.txt",
+                "closest700.txt",
+                "closest800.txt",
+                "closest900.txt",
+                "closest1000.txt"};
 
-            // now run the full visualization
-            visualizeClosestPair("input/closest100.txt");
-        }
-        else if (IsButtonClicked(buttons[1]))
-        {
-            for (int i = 0; i < 10; i++)
+            while (!choiceMade && !WindowShouldClose())
             {
+                // handle input
+                if (IsKeyPressed(KEY_DOWN))
+                {
+                    selectedIndex++;
+                    if (selectedIndex >= numOptions)
+                        selectedIndex = 0; // wrap around
+                }
+                else if (IsKeyPressed(KEY_UP))
+                {
+                    selectedIndex--;
+                    if (selectedIndex < 0)
+                        selectedIndex = numOptions - 1; // wrap around
+                }
+                else if (IsKeyPressed(KEY_ENTER))
+                {
+                    choiceMade = true;
+                }
+
                 BeginDrawing();
                 ClearBackground(BLACK);
                 updateAndDrawStars();
+
+                DrawText("Choose an input data set to visualize Closest Pair:", 300, 100, 20, LIGHTGRAY);
+
+                for (int i = 0; i < numOptions; i++)
+                {
+                    int yPos = 150 + i * 30;
+
+                    if (i == selectedIndex)
+                    {
+                        // highlight selected option
+                        DrawRectangle(400, yPos - 4, 300, 28, PINK);
+                        DrawText(options[i], 420, yPos, 18, RAYWHITE);
+                    }
+                    else
+                    {
+                        DrawText(options[i], 420, yPos, 18, GRAY);
+                    }
+                }
+
                 EndDrawing();
             }
 
-            std::ifstream fin("input/karatsubaMult.txt");
-            if (!fin.is_open())
+            // now run visualization with selected option
+            std::string chosenFile = std::string("extras/pairs_inputs/") + options[selectedIndex];
+            visualizeClosestPair(chosenFile.c_str());
+        }
+        else if (IsButtonClicked(buttons[1]))
+        {
+            bool choiceMade = false;
+            int selectedIndex = 0;
+            const int numOptions = 10;
+            const char *options[numOptions] = {
+                "karatsuba4.txt",
+                "karatsuba10.txt",
+                "karatsuba30.txt",
+                "karatsuba40.txt",
+                "karatsuba50.txt",
+                "karatsuba60.txt",
+                "karatsuba70.txt",
+                "karatsuba80.txt",
+                "karatsuba90.txt",
+                "karatsuba100.txt"};
+
+            while (!choiceMade && !WindowShouldClose())
             {
-                std::cerr << "Error: could not open input/karatsubaMult.txt\n";
-                return 1;
-            }
-            std::string xStr, yStr;
-            if (!(fin >> xStr >> yStr)) {
-                std::cerr << "Error reading numbers\n";
-                return 1;
-            }
-            else
-            {
-                std::cout << "Read values: " << xStr << " and " << yStr << "\n";
+                // handle input
+                if (IsKeyPressed(KEY_DOWN))
+                {
+                    selectedIndex++;
+                    if (selectedIndex >= numOptions)
+                        selectedIndex = 0; // wrap around
+                }
+                else if (IsKeyPressed(KEY_UP))
+                {
+                    selectedIndex--;
+                    if (selectedIndex < 0)
+                        selectedIndex = numOptions - 1; // wrap around
+                }
+                else if (IsKeyPressed(KEY_ENTER))
+                {
+                    choiceMade = true;
+                }
+
+                BeginDrawing();
+                ClearBackground(BLACK);
+                updateAndDrawStars();
+
+                DrawText("Choose an input data set to visualize Karatsuba's Integer Multiplication:", 300, 100, 20, LIGHTGRAY);
+
+                for (int i = 0; i < numOptions; i++)
+                {
+                    int yPos = 150 + i * 30;
+
+                    if (i == selectedIndex)
+                    {
+                        // highlight selected option
+                        DrawRectangle(400, yPos - 4, 300, 28, PINK);
+                        DrawText(options[i], 420, yPos, 18, RAYWHITE);
+                    }
+                    else
+                    {
+                        DrawText(options[i], 420, yPos, 18, GRAY);
+                    }
+                }
+
+                EndDrawing();
             }
 
-            visualizeKaratsuba(xStr, yStr);
+            std::string chosenFile = std::string("extras/karatsubas_inputs/") + options[selectedIndex];
+            std::ifstream fin(chosenFile);
+            std::string xStr, yStr;
+            if (!(fin >> xStr >> yStr))
+            {
+                std::cerr << "Error reading numbers\n";
+                continue;
+            }
+
+            // launch background thread for computation
+            logs.clear();
+            std::string finalResult;
+
+            std::thread calc([=, &finalResult]() mutable
+                             {
+                finalResult = karatsubaRec(xStr, yStr);  // capture final result
+                logStep("RESULT: " + xStr + " × " + yStr + " = " + finalResult); });
+            calc.detach();
+
+            // visualization loop
+            float scroll = 0;
+            int logHeight = 45;    // match your line spacing in visualizeKaratsuba
+            int headerOffset = 60; // offset from top for first log
+
+            while (!WindowShouldClose())
+            {
+                // manual scroll
+                int totalHeight = logs.size() * logHeight + headerOffset;
+                if (totalHeight > GetScreenHeight())
+                    scroll -= GetMouseWheelMove() * 20; // scroll only if content exceeds window
+
+                // clamp scroll
+                int maxScroll = std::max(0, totalHeight - GetScreenHeight());
+                if (scroll > maxScroll) scroll = maxScroll;
+                if (scroll < 0) scroll = 0;
+
+                BeginDrawing();
+                ClearBackground(BLACK);
+
+                updateAndDrawStars();                    // optional background
+                visualizeKaratsuba(xStr, yStr, +scroll); // pass +ve scroll to move content up
+
+                // draw black background rectangle behind header
+                Rectangle headerBg = {10, 20, 1120, 30}; // x, y, width, height
+                DrawRectangleRec(headerBg, BLACK);       // black box
+                DrawText(("Final Result: " + finalResult).c_str(), 10, 20, 20, GREEN);
+
+                // draw black background rectangle behind header
+                headerBg = {900, 560, 660, 30};    // x, y, width, height
+                DrawRectangleRec(headerBg, BLACK); // black box
+                DrawText("Press ESC to return", 900, 540, 18, GRAY);
+                DrawText("Scroll down for steps", 900, 570, 18, GRAY);
+
+                if (IsKeyPressed(KEY_ESCAPE))
+                    break;
+
+                EndDrawing();
+            }
         }
+
         else if (IsButtonClicked(buttons[2]))
         {
             break; // exit button
@@ -114,7 +276,7 @@ int main()
         DrawText(title, (GetScreenWidth() - titleWidth) / 2, 450, fontSize, PINK);
 
         // member names
-        const char *members[] = {"Batool Kazmi - 23K-0672", "Zunaira Ali 23K-0751", "Muhammad Zohib 23K-0602"};
+        const char *members[] = {"Batool Kazmi 23K-0672", "Zunaira Ali 23K-0751", "Muhammad Zohib 23K-0602"};
         for (int i = 0; i < 3; i++)
         {
             int nameWidth = MeasureText(members[i], fontSize);

@@ -7,7 +7,7 @@ std::vector<Star> stars;
 void initStars(int count) {
     stars.clear();
     for (int i = 0; i < count; i++) {
-        stars.push_back({ (float)GetRandomValue(0,800), (float)GetRandomValue(0,600), (float)GetRandomValue(1,3) });
+        stars.push_back({ (float)GetRandomValue(0,1100), (float)GetRandomValue(0,600), (float)GetRandomValue(1,3) });
     }
 }
 

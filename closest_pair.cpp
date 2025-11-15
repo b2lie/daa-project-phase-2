@@ -133,6 +133,9 @@ void visualizeClosestPair(const std::string &filename)
     // final display: highlight closest pair in pink
     while (!WindowShouldClose())
     {
+        if (IsKeyPressed(KEY_ESCAPE)) 
+            break;
+
         BeginDrawing();
         ClearBackground(BLACK);
 
@@ -151,15 +154,14 @@ void visualizeClosestPair(const std::string &filename)
         // display coordinates
         char buf[50];
         sprintf(buf, "Point 1: (%.1f, %.1f)", result.first.x, result.first.y);
-        DrawText(buf, 10, 550, 20, WHITE);
+        DrawText(buf, 20, 535, 20, WHITE);
 
         sprintf(buf, "Point 2: (%.1f, %.1f)", result.second.x, result.second.y);
-        DrawText(buf, 10, 575, 20, WHITE);
+        DrawText(buf, 20, 560, 20, WHITE);
 
-        // draw black background rectangle behind header
-        Rectangle headerBg = {70, 10, 660, 30}; // x, y, width, height
+        Rectangle headerBg = {855, 540, 660, 30}; // x, y, width, height
         DrawRectangleRec(headerBg, BLACK);      // black box
-        DrawText("Closest Pair Visualization (Divide & Conquer)", 80, 20, 22, PURPLE);
+        DrawText("Press ESC to return", 900, 560, 18, GRAY);
 
         EndDrawing();
     }
