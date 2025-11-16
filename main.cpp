@@ -240,7 +240,7 @@ int main() {
             }
         }
 
-        else if (IsButtonClicked(buttons[2])){
+        else if (IsButtonClicked(buttons[2])) {
             break; // exiting!
         }
 
