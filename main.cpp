@@ -5,22 +5,20 @@
 #include <fstream>
 #include <iostream>
 #include <thread>
+using namespace std;
 
-struct Button
-{
+struct Button {
     Rectangle bounds;
     const char *label;
     Color color;
 };
 
 // helper to check mouse click inside a button
-bool IsButtonClicked(Button btn)
-{
+bool IsButtonClicked(Button btn) {
     return CheckCollisionPointRec(GetMousePosition(), btn.bounds) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
 }
 
-int main()
-{
+int main() {
     InitWindow(1120, 600, "Divide & Conquer Visualizer");
 
     Image icon = LoadImage("extras/icon.png");
@@ -41,10 +39,10 @@ int main()
     Button buttons[3] = {
         {{425, 220, 250, 50}, "Closest Pair", LIGHTGRAY},
         {{425, 290, 250, 50}, "Integer Multiplication", LIGHTGRAY},
-        {{425, 360, 250, 50}, "Exit", LIGHTGRAY}};
+        {{425, 360, 250, 50}, "Exit", LIGHTGRAY}
+    };
 
-    while (!WindowShouldClose())
-    {
+    while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(BLACK);
         updateAndDrawStars(); // stars move in bg!
@@ -54,10 +52,9 @@ int main()
         DrawText("Divide & Conquer Visualizer", 350, 100, 30, PURPLE);
         DrawText("DAA Project, Sem 5 - Fall 2025", 395, 150, 20, LIGHTGRAY);
 
-        // draw and handle buttons
-        for (int i = 0; i < 3; i++)
-        {
-            // hover effect
+        // drawing + handling buttons
+        for (int i = 0; i < 3; i++) {
+            // enabling hover effect
             if (CheckCollisionPointRec(GetMousePosition(), buttons[i].bounds))
                 buttons[i].color = PINK;
             else
@@ -74,9 +71,8 @@ int main()
             DrawText(buttons[i].label, textX, textY, fontSize, BLACK);
         }
 
-        // handle button clicks
-        if (IsButtonClicked(buttons[0]))
-        {
+        // handling button interactions
+        if (IsButtonClicked(buttons[0])){
             bool choiceMade = false;
             int selectedIndex = 0;
             const int numOptions = 10;
@@ -90,25 +86,21 @@ int main()
                 "closest700.txt",
                 "closest800.txt",
                 "closest900.txt",
-                "closest1000.txt"};
+                "closest1000.txt"
+            };
 
-            while (!choiceMade && !WindowShouldClose())
-            {
-                // handle input
-                if (IsKeyPressed(KEY_DOWN))
-                {
+            while (!choiceMade && !WindowShouldClose()) {
+                if (IsKeyPressed(KEY_DOWN)) {
                     selectedIndex++;
                     if (selectedIndex >= numOptions)
                         selectedIndex = 0; // wrap around
                 }
-                else if (IsKeyPressed(KEY_UP))
-                {
+                else if (IsKeyPressed(KEY_UP)) {
                     selectedIndex--;
                     if (selectedIndex < 0)
                         selectedIndex = numOptions - 1; // wrap around
                 }
-                else if (IsKeyPressed(KEY_ENTER))
-                {
+                else if (IsKeyPressed(KEY_ENTER)) {
                     choiceMade = true;
                 }
 
@@ -118,18 +110,15 @@ int main()
 
                 DrawText("Choose an input data set to visualize Closest Pair:", 300, 100, 20, LIGHTGRAY);
 
-                for (int i = 0; i < numOptions; i++)
-                {
+                for (int i = 0; i < numOptions; i++) {
                     int yPos = 150 + i * 30;
 
-                    if (i == selectedIndex)
-                    {
-                        // highlight selected option
+                    if (i == selectedIndex) {
+                        // highlighting selected option
                         DrawRectangle(400, yPos - 4, 300, 28, PINK);
                         DrawText(options[i], 420, yPos, 18, RAYWHITE);
                     }
-                    else
-                    {
+                    else {
                         DrawText(options[i], 420, yPos, 18, GRAY);
                     }
                 }
@@ -137,12 +126,11 @@ int main()
                 EndDrawing();
             }
 
-            // now run visualization with selected option
-            std::string chosenFile = std::string("extras/pairs_inputs/") + options[selectedIndex];
+            // running visualization with selected option
+            string chosenFile = string("extras/pairs_inputs/") + options[selectedIndex];
             visualizeClosestPair(chosenFile.c_str());
         }
-        else if (IsButtonClicked(buttons[1]))
-        {
+        else if (IsButtonClicked(buttons[1])) {
             bool choiceMade = false;
             int selectedIndex = 0;
             const int numOptions = 10;
@@ -156,25 +144,21 @@ int main()
                 "karatsuba70.txt",
                 "karatsuba80.txt",
                 "karatsuba90.txt",
-                "karatsuba100.txt"};
+                "karatsuba100.txt"
+            };
 
-            while (!choiceMade && !WindowShouldClose())
-            {
-                // handle input
-                if (IsKeyPressed(KEY_DOWN))
-                {
+            while (!choiceMade && !WindowShouldClose()) {
+                if (IsKeyPressed(KEY_DOWN)) {
                     selectedIndex++;
                     if (selectedIndex >= numOptions)
                         selectedIndex = 0; // wrap around
                 }
-                else if (IsKeyPressed(KEY_UP))
-                {
+                else if (IsKeyPressed(KEY_UP)) {
                     selectedIndex--;
                     if (selectedIndex < 0)
                         selectedIndex = numOptions - 1; // wrap around
                 }
-                else if (IsKeyPressed(KEY_ENTER))
-                {
+                else if (IsKeyPressed(KEY_ENTER)) {
                     choiceMade = true;
                 }
 
@@ -184,18 +168,14 @@ int main()
 
                 DrawText("Choose an input data set to visualize Karatsuba's Integer Multiplication:", 300, 100, 20, LIGHTGRAY);
 
-                for (int i = 0; i < numOptions; i++)
-                {
+                for (int i = 0; i < numOptions; i++) {
                     int yPos = 150 + i * 30;
 
-                    if (i == selectedIndex)
-                    {
-                        // highlight selected option
+                    if (i == selectedIndex) {
                         DrawRectangle(400, yPos - 4, 300, 28, PINK);
                         DrawText(options[i], 420, yPos, 18, RAYWHITE);
                     }
-                    else
-                    {
+                    else {
                         DrawText(options[i], 420, yPos, 18, GRAY);
                     }
                 }
@@ -203,22 +183,21 @@ int main()
                 EndDrawing();
             }
 
-            std::string chosenFile = std::string("extras/karatsubas_inputs/") + options[selectedIndex];
-            std::ifstream fin(chosenFile);
-            std::string xStr, yStr;
+            string chosenFile = string("extras/karatsubas_inputs/") + options[selectedIndex];
+            ifstream fin(chosenFile);
+            string xStr, yStr;
             if (!(fin >> xStr >> yStr))
             {
-                std::cerr << "Error reading numbers\n";
+                cerr << "Error reading numbers\n";
                 continue;
             }
 
-            // launch background thread for computation
+            // launching background thread for computation
             logs.clear();
-            std::string finalResult;
+            string finalResult;
 
-            std::thread calc([=, &finalResult]() mutable
-                             {
-                finalResult = karatsubaRec(xStr, yStr);  // capture final result
+            thread calc([=, &finalResult]() mutable {
+                finalResult = karatsubaRec(xStr, yStr);  // capturing final result
                 logStep("RESULT: " + xStr + " × " + yStr + " = " + finalResult); });
             calc.detach();
 
@@ -227,32 +206,30 @@ int main()
             int logHeight = 45;    // match your line spacing in visualizeKaratsuba
             int headerOffset = 60; // offset from top for first log
 
-            while (!WindowShouldClose())
-            {
+            while (!WindowShouldClose()) {
                 // manual scroll
                 int totalHeight = logs.size() * logHeight + headerOffset;
                 if (totalHeight > GetScreenHeight())
                     scroll -= GetMouseWheelMove() * 20; // scroll only if content exceeds window
 
                 // clamp scroll
-                int maxScroll = std::max(0, totalHeight - GetScreenHeight());
+                int maxScroll = max(0, totalHeight - GetScreenHeight());
                 if (scroll > maxScroll) scroll = maxScroll;
                 if (scroll < 0) scroll = 0;
 
                 BeginDrawing();
                 ClearBackground(BLACK);
 
-                updateAndDrawStars();                    // optional background
-                visualizeKaratsuba(xStr, yStr, +scroll); // pass +ve scroll to move content up
+                updateAndDrawStars();
+                visualizeKaratsuba(xStr, yStr, +scroll); // moves content upwards as it comes
 
-                // draw black background rectangle behind header
+                // drawing black background rectangle behind header
                 Rectangle headerBg = {10, 20, 1120, 30}; // x, y, width, height
                 DrawRectangleRec(headerBg, BLACK);       // black box
                 DrawText(("Final Result: " + finalResult).c_str(), 10, 20, 20, GREEN);
 
-                // draw black background rectangle behind header
-                headerBg = {900, 560, 660, 30};    // x, y, width, height
-                DrawRectangleRec(headerBg, BLACK); // black box
+                headerBg = {900, 560, 660, 30};
+                DrawRectangleRec(headerBg, BLACK);
                 DrawText("Press ESC to return", 900, 540, 18, GRAY);
                 DrawText("Scroll down for steps", 900, 570, 18, GRAY);
 
@@ -263,22 +240,19 @@ int main()
             }
         }
 
-        else if (IsButtonClicked(buttons[2]))
-        {
-            break; // exit button
+        else if (IsButtonClicked(buttons[2])){
+            break; // exiting!
         }
 
         int fontSize = 18;
 
-        // group title
+        // credits
         const char *title = "Group Members:";
         int titleWidth = MeasureText(title, fontSize);
         DrawText(title, (GetScreenWidth() - titleWidth) / 2, 450, fontSize, PINK);
 
-        // member names
         const char *members[] = {"Batool Kazmi 23K-0672", "Zunaira Ali 23K-0751", "Muhammad Zohib 23K-0602"};
-        for (int i = 0; i < 3; i++)
-        {
+        for (int i = 0; i < 3; i++){
             int nameWidth = MeasureText(members[i], fontSize);
             DrawText(members[i], (GetScreenWidth() - nameWidth) / 2, 490 + (i * 20), fontSize, GRAY);
         }
