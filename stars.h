@@ -1,13 +1,14 @@
 #pragma once
 #include <vector>
 #include "raylib.h"
+using namespace std;
 
 struct Star {
     float x, y;
     float speed;
 };
 
-extern std::vector<Star> stars;
+extern vector<Star> stars;
 
 void initStars(int count);
 void updateAndDrawStars();

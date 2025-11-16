@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
 
-extern std::vector<std::string> logs;
+extern vector<string> logs;
 
-void visualizeKaratsuba(const std::string &x, const std::string &y, float scroll);
-void logStep(const std::string &msg);
-std::string karatsubaRec(const std::string &x, const std::string &y, int depth = 0);
+void visualizeKaratsuba(const string &x, const string &y, float scroll);
+void logStep(const string &msg);
+string karatsubaRec(const string &x, const string &y, int depth = 0);
