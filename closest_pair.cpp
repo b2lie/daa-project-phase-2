@@ -6,34 +6,31 @@
 #include <cstdlib>
 #include <ctime>
 #include <thread> // for sleep
+using namespace std;
 
-// --- read points from file ---
-std::vector<Point> readPointsFromFile(const std::string &filename)
-{
-    std::vector<Point> points;
-    std::ifstream fin(filename);
+vector<Point> readPointsFromFile(const string &filename) {
+    vector<Point> points;
+    ifstream fin(filename);
     double x, y;
     while (fin >> x >> y)
         points.push_back({x, y});
     return points;
 }
 
-// --- helpers ---
+// helpers :D
 bool compareX(const Point &a, const Point &b) { return a.x < b.x; }
 bool compareY(const Point &a, const Point &b) { return a.y < b.y; }
-double dist(const Point &a, const Point &b)
-{
+double dist(const Point &a, const Point &b) {
     double dx = a.x - b.x, dy = a.y - b.y;
     return sqrt(dx * dx + dy * dy);
 }
 
-static void sleepMs(int ms) { std::this_thread::sleep_for(std::chrono::milliseconds(ms)); }
+static void sleepMs(int ms) { this_thread::sleep_for(chrono::milliseconds(ms)); }
 
-// --- brute force for small sets ---
-std::pair<Point, Point> bruteForce(const std::vector<Point> &pts, int l, int r)
-{
+// brute forcing for small sets
+pair<Point, Point> bruteForce(const vector<Point> &pts, int l, int r) {
     double minD = 1e9;
-    std::pair<Point, Point> res;
+    pair<Point, Point> res;
     for (int i = l; i <= r; i++)
         for (int j = i + 1; j <= r; j++)
         {
@@ -44,9 +41,8 @@ std::pair<Point, Point> bruteForce(const std::vector<Point> &pts, int l, int r)
     return res;
 }
 
-// --- recursive divide & conquer with animation ---
-std::pair<Point, Point> closestPairRec(std::vector<Point> &Px, std::vector<Point> &Py, int l, int r, std::vector<Point> &allPoints)
-{
+// recursive divide & conquer ++ animation
+pair<Point, Point> closestPairRec(vector<Point> &Px, vector<Point> &Py, int l, int r, vector<Point> &allPoints) {
     // draw current subset and midline
     BeginDrawing();
     ClearBackground(BLACK);
@@ -71,7 +67,7 @@ std::pair<Point, Point> closestPairRec(std::vector<Point> &Px, std::vector<Point
 
     // divide
     Point midPoint = Px[mid];
-    std::vector<Point> PyLeft, PyRight;
+    vector<Point> PyLeft, PyRight;
     for (auto &p : Py)
     {
         if (p.x <= midPoint.x)
@@ -82,25 +78,23 @@ std::pair<Point, Point> closestPairRec(std::vector<Point> &Px, std::vector<Point
 
     auto dl = closestPairRec(Px, PyLeft, l, mid, allPoints);
     auto dr = closestPairRec(Px, PyRight, mid + 1, r, allPoints);
-    double d = std::min(dist(dl.first, dl.second), dist(dr.first, dr.second));
-    std::pair<Point, Point> minPair = (dist(dl.first, dl.second) < dist(dr.first, dr.second)) ? dl : dr;
+    double d = min(dist(dl.first, dl.second), dist(dr.first, dr.second));
+    pair<Point, Point> minPair = (dist(dl.first, dl.second) < dist(dr.first, dr.second)) ? dl : dr;
 
     // strip
-    std::vector<Point> strip;
+    vector<Point> strip;
     for (auto &p : Py)
         if (fabs(p.x - midPoint.x) < d)
             strip.push_back(p);
 
-    for (size_t i = 0; i < strip.size(); i++)
-        for (size_t j = i + 1; j < strip.size() && (strip[j].y - strip[i].y) < d; j++)
-        {
+    for (size_t i = 0; i < strip.size(); i++) {
+        for (size_t j = i + 1; j < strip.size() && (strip[j].y - strip[i].y) < d; j++) {
             double ds = dist(strip[i], strip[j]);
-            if (ds < d)
-            {
+            if (ds < d) {
                 d = ds;
                 minPair = {strip[i], strip[j]};
 
-                // draw temporary candidate pair
+                // drawing temporary candidate pairs
                 BeginDrawing();
                 for (auto &p : allPoints)
                     DrawCircle(p.x, p.y, 4, WHITE);
@@ -111,38 +105,32 @@ std::pair<Point, Point> closestPairRec(std::vector<Point> &Px, std::vector<Point
                 sleepMs(200);
             }
         }
-
-    return minPair;
+        return minPair;
+    }
 }
 
-// --- main D&C function ---
-std::pair<Point, Point> closestPairDivideAndConquer(std::vector<Point> pts)
-{
-    std::vector<Point> Px = pts, Py = pts;
-    std::sort(Px.begin(), Px.end(), compareX);
-    std::sort(Py.begin(), Py.end(), compareY);
+pair<Point, Point> closestPairDivideAndConquer(vector<Point> pts) {
+    vector<Point> Px = pts, Py = pts;
+    sort(Px.begin(), Px.end(), compareX);
+    sort(Py.begin(), Py.end(), compareY);
     return closestPairRec(Px, Py, 0, pts.size() - 1, pts);
 }
 
-// --- visualization function ---
-void visualizeClosestPair(const std::string &filename)
-{
-    std::vector<Point> pts = readPointsFromFile(filename);
+// visualization function
+void visualizeClosestPair(const string &filename) {
+    vector<Point> pts = readPointsFromFile(filename);
     auto result = closestPairDivideAndConquer(pts);
 
-    // final display: highlight closest pair in pink
-    while (!WindowShouldClose())
-    {
+    // final display: highlighting closest pair in pink
+    while (!WindowShouldClose()) {
         if (IsKeyPressed(KEY_ESCAPE)) 
             break;
 
         BeginDrawing();
         ClearBackground(BLACK);
 
-        // stars background
         updateAndDrawStars();
 
-        // all points
         for (auto &p : pts)
             DrawCircle(p.x, p.y, 4, WHITE);
 
@@ -151,7 +139,7 @@ void visualizeClosestPair(const std::string &filename)
         DrawCircle(result.second.x, result.second.y, 6, PINK);
         DrawLine(result.first.x, result.first.y, result.second.x, result.second.y, PURPLE);
 
-        // display coordinates
+        // displaying coordinates
         char buf[50];
         sprintf(buf, "Point 1: (%.1f, %.1f)", result.first.x, result.first.y);
         DrawText(buf, 20, 535, 20, WHITE);
