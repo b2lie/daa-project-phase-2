@@ -17,6 +17,7 @@ cd your-repo`
 
 
 **Run the build script**
+
 Simply double-click build.bat or run it from the terminal:
 
 > `build.bat`
